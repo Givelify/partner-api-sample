@@ -1,0 +1,103 @@
+<%- include('partials/header', { activeTab: 'donations' }) %>
+
+<h2 class="text-xl font-semibold mb-4">Donations</h2>
+
+<!-- Filter form -->
+<form method="GET" action="/donations" class="bg-white rounded border border-gray-200 p-4 mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+  <div>
+    <label class="block text-xs font-medium text-gray-600 mb-1">Start date</label>
+    <input type="date" name="start_time" value="<%= filters.start_time %>"
+           class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm" />
+  </div>
+  <div>
+    <label class="block text-xs font-medium text-gray-600 mb-1">End date</label>
+    <input type="date" name="end_time" value="<%= filters.end_time %>"
+           class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm" />
+  </div>
+  <div>
+    <label class="block text-xs font-medium text-gray-600 mb-1">Donor UUID</label>
+    <input type="text" name="donor_id" value="<%= filters.donor_id %>" placeholder="xxxxxxxx-xxxx-..."
+           class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm" />
+  </div>
+  <div>
+    <label class="block text-xs font-medium text-gray-600 mb-1">Updated since</label>
+    <input type="date" name="updated_since" value="<%= filters.updated_since %>"
+           class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm" />
+  </div>
+  <div class="col-span-2 md:col-span-4 flex gap-2">
+    <button type="submit" class="bg-blue-700 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-800">Apply</button>
+    <a href="/donations" class="text-sm text-gray-500 px-4 py-1.5 hover:underline">Clear</a>
+  </div>
+</form>
+
+<!-- Error state -->
+<% if (error) { %>
+  <div class="bg-red-50 border border-red-300 rounded p-4 mb-4 text-red-700">
+    <strong><%= error.status ? error.status + ' — ' : '' %></strong><%= error.message %>
+    <% if (error.status === 401) { %>
+      <a href="/settings" class="underline ml-1">Check your API key in Settings.</a>
+    <% } %>
+  </div>
+
+<!-- Empty state -->
+<% } else if (!data || data.length === 0) { %>
+  <p class="text-gray-500 py-8 text-center">No results found.</p>
+
+<!-- Data table -->
+<% } else { %>
+  <div class="overflow-x-auto">
+    <table class="w-full bg-white border border-gray-200 rounded text-sm">
+      <thead class="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+        <tr>
+          <th class="px-4 py-3">Date</th>
+          <th class="px-4 py-3">Donor</th>
+          <th class="px-4 py-3">Amount</th>
+          <th class="px-4 py-3">Envelope(s)</th>
+          <th class="px-4 py-3">Status</th>
+          <th class="px-4 py-3">Receipt #</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <% data.forEach(donation => { %>
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-3 text-gray-600"><%= donation.created_at || '—' %></td>
+          <td class="px-4 py-3"><%= donation.donor_id || '—' %></td>
+          <td class="px-4 py-3 font-medium">$<%= donation.amount != null ? donation.amount.toFixed(2) : '—' %></td>
+          <td class="px-4 py-3 text-gray-600">
+            <% if (donation.envelopes && donation.envelopes.length > 0) { %>
+              <%= donation.envelopes.map(e => e.name).join(', ') %>
+            <% } else { %>—<% } %>
+          </td>
+          <td class="px-4 py-3">
+            <span class="px-2 py-0.5 rounded-full text-xs font-medium
+              <%= donation.status === 'donated' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' %>">
+              <%= donation.status %>
+            </span>
+          </td>
+          <td class="px-4 py-3 text-gray-500"><%= donation.receipt_number || '—' %></td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <% if (meta) { %>
+  <div class="flex items-center justify-between mt-4 text-sm text-gray-600">
+    <span>
+      Page <%= meta.current_page %> of <%= meta.last_page %>
+      &nbsp;·&nbsp; <%= meta.total %> total
+    </span>
+    <div class="flex gap-2">
+      <% if (prevQuery) { %>
+        <a href="/donations?<%= prevQuery %>" class="px-3 py-1.5 border border-gray-300 rounded hover:bg-gray-100">← Previous</a>
+      <% } %>
+      <% if (nextQuery) { %>
+        <a href="/donations?<%= nextQuery %>" class="px-3 py-1.5 border border-gray-300 rounded hover:bg-gray-100">Next →</a>
+      <% } %>
+    </div>
+  </div>
+  <% } %>
+<% } %>
+
+<%- include('partials/footer') %>
