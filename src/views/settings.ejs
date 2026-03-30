@@ -1,0 +1,72 @@
+<%- include('partials/header', { activeTab: 'settings' }) %>
+
+<h2 class="text-xl font-semibold mb-4">Settings</h2>
+
+<div class="max-w-lg">
+
+  <% if (saved) { %>
+    <div class="bg-green-50 border border-green-300 rounded p-4 mb-6 text-green-700">
+      Settings saved. New credentials are active immediately.
+    </div>
+  <% } %>
+
+  <% if (error) { %>
+    <div class="bg-red-50 border border-red-300 rounded p-4 mb-6 text-red-700">
+      <%= error %>
+    </div>
+  <% } %>
+
+  <form method="POST" action="/settings" class="bg-white border border-gray-200 rounded p-6 space-y-5">
+
+    <div>
+      <label for="api_base_url" class="block text-sm font-medium text-gray-700 mb-1">
+        API Base URL
+        <span class="text-xs text-gray-400 font-normal ml-1">(no trailing slash)</span>
+      </label>
+      <input type="url" id="api_base_url" name="api_base_url"
+             value="<%= apiBaseUrl %>"
+             placeholder="https://api.givelify.com/api/v1"
+             required
+             class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      <p class="text-xs text-gray-400 mt-1">The value stored in <code>API_BASE_URL</code> in your .env file.</p>
+    </div>
+
+    <div>
+      <label for="api_key" class="block text-sm font-medium text-gray-700 mb-1">API Key</label>
+      <div class="flex gap-2">
+        <input type="password" id="api_key" name="api_key"
+               value="<%= apiKey %>"
+               required
+               class="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <button type="button" onclick="toggleReveal()"
+                class="px-3 py-2 border border-gray-300 rounded text-sm text-gray-600 hover:bg-gray-50">
+          Show
+        </button>
+      </div>
+      <p class="text-xs text-gray-400 mt-1">The value stored in <code>API_KEY</code> in your .env file.</p>
+    </div>
+
+    <button type="submit"
+            class="bg-blue-700 text-white px-6 py-2 rounded text-sm font-medium hover:bg-blue-800">
+      Save Settings
+    </button>
+  </form>
+
+</div>
+
+<script>
+  // Toggle API key field between masked and revealed
+  function toggleReveal() {
+    const input = document.getElementById('api_key');
+    const btn = input.nextElementSibling;
+    if (input.type === 'password') {
+      input.type = 'text';
+      btn.textContent = 'Hide';
+    } else {
+      input.type = 'password';
+      btn.textContent = 'Show';
+    }
+  }
+</script>
+
+<%- include('partials/footer') %>
