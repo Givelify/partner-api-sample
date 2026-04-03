@@ -51,15 +51,69 @@ function updateCredentials(baseURL, apiKey) {
 }
 
 /**
+ * Builds the full request URL including query params.
+ * Used for debug output only — Axios doesn't expose the final URL directly.
+ */
+function buildFullUrl(baseURL, path, params) {
+  const base = baseURL.replace(/\/$/, '');
+  const cleanPath = path.startsWith('/') ? path : '/' + path;
+  const paramStr = Object.entries(params)
+    .filter(([, v]) => v !== undefined && v !== null && v !== '')
+    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+    .join('&');
+  return paramStr ? `${base}${cleanPath}?${paramStr}` : `${base}${cleanPath}`;
+}
+
+/**
+ * Returns a masked version of the API key for safe display in the debug panel.
+ * Shows the first 4 characters followed by bullets so users can identify which
+ * key is in use without exposing the full secret in screenshots.
+ */
+function maskApiKey(key) {
+  if (!key || key.length <= 4) return '••••••••';
+  return key.slice(0, 4) + '••••••••';
+}
+
+/**
+ * Stores request/response details from the most recent API call.
+ *
+ * NOTE: Module-level state is fine for this single-user sample app.
+ * Do not use this pattern in a multi-user production service — concurrent
+ * requests would overwrite each other's debug info.
+ */
+let lastDebug = null;
+
+/**
  * Internal GET helper. Normalizes all errors to { status, message }.
+ * Also populates lastDebug with request/response details for the UI panel.
  */
 async function get(path, params = {}) {
+  const url = buildFullUrl(state.baseURL, path, params);
+  const headers = {
+    Authorization: `Bearer ${maskApiKey(state.apiKey)}`,
+    Accept: 'application/json',
+  };
+
+  // Capture request details before the call so they're available even if it throws
+  lastDebug = {
+    request: { url, headers },
+    response: null,
+  };
+
   try {
     const response = await instance.get(path, { params });
+    lastDebug.response = {
+      status: response.status,
+      body: JSON.stringify(response.data, null, 2),
+    };
     return response.data;
   } catch (err) {
     if (err.response) {
       // API responded with a non-2xx code
+      lastDebug.response = {
+        status: err.response.status,
+        body: JSON.stringify(err.response.data, null, 2),
+      };
       throw {
         status: err.response.status,
         message:
@@ -69,6 +123,7 @@ async function get(path, params = {}) {
       };
     }
     // Network error, timeout, DNS failure, or wrong base URL
+    lastDebug.response = { status: 0, body: null };
     throw {
       status: 0,
       message: 'Could not reach the API — check the Base URL in Settings',
@@ -152,6 +207,7 @@ module.exports = {
   getOrganizations,
   getOrganization,
   updateCredentials,
+  getLastDebug: () => lastDebug,
   // Test helpers — not for production use
   _getInstance: () => instance,
   _getState: () => state,
