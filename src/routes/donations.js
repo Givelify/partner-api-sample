@@ -48,12 +48,15 @@ router.get('/', async (req, res) => {
     error = err;
   }
 
+  const debug = apiClient.getLastDebug();
+
   res.render('donations', {
     activeTab: 'donations',
     data,
     links,
     meta,
     error,
+    debug,
     filters: {
       start_time: start_time || '',
       end_time: end_time || '',

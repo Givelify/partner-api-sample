@@ -30,10 +30,13 @@ router.get('/', async (req, res) => {
     error = err;
   }
 
+  const debug = apiClient.getLastDebug();
+
   res.render('envelopes', {
     activeTab: 'envelopes',
     data,
     error,
+    debug,
     filters: { updated_since: updated_since || '', organization_id: organization_id || '' },
   });
 });

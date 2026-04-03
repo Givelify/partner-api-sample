@@ -24,10 +24,13 @@ router.get('/', async (req, res) => {
     error = err;
   }
 
+  const debug = apiClient.getLastDebug();
+
   res.render('organizations', {
     activeTab: 'organizations',
     data,
     error,
+    debug,
   });
 });
 

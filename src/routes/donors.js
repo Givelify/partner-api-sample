@@ -34,12 +34,15 @@ router.get('/', async (req, res) => {
     error = err;
   }
 
+  const debug = apiClient.getLastDebug();
+
   res.render('donors', {
     activeTab: 'donors',
     data,
     links,
     meta,
     error,
+    debug,
     filters: { email: email || '', name: name || '', updated_since: updated_since || '' },
     prevQuery: links && links.prev ? pageQuery(req.query, Number(page) - 1) : null,
     nextQuery: links && links.next ? pageQuery(req.query, Number(page) + 1) : null,
