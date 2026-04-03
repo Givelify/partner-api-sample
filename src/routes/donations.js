@@ -27,14 +27,15 @@ function pageQuery(currentQuery, page) {
 }
 
 router.get('/', async (req, res) => {
-  const { start_time, end_time, donor_id, updated_since, page = 1, per_page = 20 } = req.query;
+  const { start_time, end_time, donor_id, organization_id, updated_since, page = 1, per_page = 20 } = req.query;
 
   // Build params — only include filters the user actually provided
   const params = { page, per_page };
-  if (start_time)    params.start_time    = start_time;
-  if (end_time)      params.end_time      = end_time;
-  if (donor_id)      params.donor_id      = donor_id;
-  if (updated_since) params.updated_since = updated_since;
+  if (start_time)      params.start_time      = start_time;
+  if (end_time)        params.end_time        = end_time;
+  if (donor_id)        params.donor_id        = donor_id;
+  if (organization_id) params.organization_id = organization_id;
+  if (updated_since)   params.updated_since   = updated_since;
 
   let data = [], links = null, meta = null, error = null;
 
@@ -57,6 +58,7 @@ router.get('/', async (req, res) => {
       start_time: start_time || '',
       end_time: end_time || '',
       donor_id: donor_id || '',
+      organization_id: organization_id || '',
       updated_since: updated_since || '',
     },
     prevQuery: links && links.prev ? pageQuery(req.query, Number(page) - 1) : null,

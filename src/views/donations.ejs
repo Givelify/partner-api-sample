@@ -3,7 +3,7 @@
 <h2 class="text-xl font-semibold mb-4">Donations</h2>
 
 <!-- Filter form -->
-<form method="GET" action="/donations" class="bg-white rounded border border-gray-200 p-4 mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+<form method="GET" action="/donations" class="bg-white rounded border border-gray-200 p-4 mb-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
   <div>
     <label class="block text-xs font-medium text-gray-600 mb-1">Start date</label>
     <input type="date" name="start_time" value="<%= filters.start_time %>"
@@ -20,11 +20,16 @@
            class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm" />
   </div>
   <div>
+    <label class="block text-xs font-medium text-gray-600 mb-1">Organization UUID</label>
+    <input type="text" name="organization_id" value="<%= filters.organization_id %>" placeholder="xxxxxxxx-xxxx-..."
+           class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm" />
+  </div>
+  <div>
     <label class="block text-xs font-medium text-gray-600 mb-1">Updated since</label>
     <input type="date" name="updated_since" value="<%= filters.updated_since %>"
            class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm" />
   </div>
-  <div class="col-span-2 md:col-span-4 flex gap-2">
+  <div class="col-span-2 md:col-span-3 lg:col-span-5 flex gap-2">
     <button type="submit" class="bg-blue-700 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-800">Apply</button>
     <a href="/donations" class="text-sm text-gray-500 px-4 py-1.5 hover:underline">Clear</a>
   </div>

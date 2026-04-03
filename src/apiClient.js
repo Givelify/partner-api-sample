@@ -82,7 +82,7 @@ async function get(path, params = {}) {
  * GET /donations
  * Paginated. Returns { data, links, meta }.
  *
- * @param {{ start_time?, end_time?, donor_id?, updated_since?, page?, per_page? }} params
+ * @param {{ start_time?, end_time?, donor_id?, organization_id?, updated_since?, page?, per_page? }} params
  */
 async function getDonations(params) {
   return get('/donations', params);

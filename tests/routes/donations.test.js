@@ -51,4 +51,12 @@ describe('GET /donations', () => {
     const res = await request(app).get('/donations');
     expect(res.text).toContain('Next');
   });
+
+  it('passes organization_id filter to apiClient', async () => {
+    apiClient.getDonations.mockResolvedValue(paginated());
+    await request(app).get('/donations?organization_id=org-uuid-123');
+    expect(apiClient.getDonations).toHaveBeenCalledWith(
+      expect.objectContaining({ organization_id: 'org-uuid-123' })
+    );
+  });
 });
