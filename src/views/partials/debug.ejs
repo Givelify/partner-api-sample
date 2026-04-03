@@ -1,0 +1,54 @@
+<% if (debug) { %>
+<div class="mt-10 border-t border-gray-200 pt-6 space-y-4">
+  <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">API Debug</h3>
+
+  <!-- Frame 1: Request -->
+  <div class="rounded border border-gray-700 bg-gray-900 text-xs font-mono overflow-x-auto">
+    <div class="px-4 py-2 border-b border-gray-700 text-gray-400 text-xs font-sans font-semibold uppercase tracking-wide">
+      Request
+    </div>
+    <div class="px-4 py-3 space-y-1">
+      <p class="text-green-400 break-all"><%= debug.request.url %></p>
+      <% Object.entries(debug.request.headers).forEach(([name, value]) => { %>
+        <p>
+          <span class="text-blue-400"><%= name %>:</span>
+          <span class="text-gray-300"> <%= value %></span>
+        </p>
+      <% }); %>
+    </div>
+  </div>
+
+  <!-- Frame 2: Response -->
+  <div class="rounded border border-gray-700 bg-gray-900 text-xs font-mono overflow-x-auto">
+    <div class="px-4 py-2 border-b border-gray-700 flex items-center gap-3">
+      <span class="text-gray-400 text-xs font-sans font-semibold uppercase tracking-wide">Response</span>
+      <% if (debug.response) { %>
+        <span class="font-bold <%= debug.response.status === 0 || debug.response.status >= 400 ? 'text-red-400' : 'text-green-400' %>">
+          <%= debug.response.status === 0 ? 'No response' : debug.response.status %>
+        </span>
+      <% } %>
+    </div>
+    <div class="px-4 py-3">
+      <% if (!debug.response || !debug.response.body) { %>
+        <p class="text-red-400">No response received. Check the API Base URL in Settings.</p>
+      <% } else { %>
+        <%
+          const responseLines = debug.response.body.split('\n');
+          const previewLines = responseLines.slice(0, 10).join('\n');
+          const remainingLines = responseLines.slice(10).join('\n');
+          const remainingCount = responseLines.length - 10;
+        %>
+        <pre class="text-gray-300 whitespace-pre-wrap break-all"><%= previewLines %></pre>
+        <% if (remainingCount > 0) { %>
+          <details class="mt-2">
+            <summary class="text-blue-400 cursor-pointer select-none hover:text-blue-300">
+              Show <%= remainingCount %> more line<%= remainingCount === 1 ? '' : 's' %>
+            </summary>
+            <pre class="text-gray-300 whitespace-pre-wrap break-all mt-1"><%= remainingLines %></pre>
+          </details>
+        <% } %>
+      <% } %>
+    </div>
+  </div>
+</div>
+<% } %>
