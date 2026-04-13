@@ -41,20 +41,22 @@ router.get('/', (req, res) => {
     activeTab: 'settings',
     apiBaseUrl: process.env.API_BASE_URL || '',
     apiKey: process.env.API_KEY || '',
+    webhookReceiverUrl: process.env.WEBHOOK_RECEIVER_URL || '',
     saved: req.query.saved === '1',
     error: null,
   });
 });
 
 router.post('/', (req, res) => {
-  const { api_base_url, api_key } = req.body;
+  const { api_base_url, api_key, webhook_receiver_url } = req.body;
 
-  // Validate — neither field may be blank
+  // Validate — API base URL and key may not be blank
   if (!api_base_url || !api_key) {
     return res.status(400).render('settings', {
       activeTab: 'settings',
       apiBaseUrl: api_base_url || process.env.API_BASE_URL || '',
       apiKey: api_key || process.env.API_KEY || '',
+      webhookReceiverUrl: webhook_receiver_url || process.env.WEBHOOK_RECEIVER_URL || '',
       saved: false,
       error: 'Both API Base URL and API Key are required.',
     });
@@ -69,11 +71,13 @@ router.post('/', (req, res) => {
   }
   envContent = setEnvValue(envContent, 'API_BASE_URL', api_base_url);
   envContent = setEnvValue(envContent, 'API_KEY', api_key);
+  envContent = setEnvValue(envContent, 'WEBHOOK_RECEIVER_URL', webhook_receiver_url || '');
   fs.writeFileSync(ENV_PATH, envContent, 'utf8');
 
   // Update in-memory config and rebuild the axios instance immediately
   process.env.API_BASE_URL = api_base_url;
   process.env.API_KEY = api_key;
+  process.env.WEBHOOK_RECEIVER_URL = webhook_receiver_url || '';
   apiClient.updateCredentials(api_base_url, api_key);
 
   res.redirect('/settings?saved=1');
