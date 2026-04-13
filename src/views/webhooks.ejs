@@ -1,0 +1,120 @@
+<%- include('partials/header', { activeTab: 'webhooks' }) %>
+
+<h2 class="text-xl font-semibold mb-4">Webhooks</h2>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+  <!-- ── Trigger form ─────────────────────────────────────────────────────── -->
+  <div>
+    <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">Send Test Webhook</h3>
+
+    <div class="bg-blue-50 border border-blue-200 rounded p-3 mb-4 text-xs text-blue-700">
+      The Partner API requires an <strong>HTTPS</strong> URL. For local testing, expose this app
+      with a tunneling tool such as
+      <a href="https://ngrok.com" target="_blank" rel="noopener" class="underline">ngrok</a>
+      and paste the HTTPS tunnel URL below (e.g. <code>https://abc123.ngrok.io/webhooks/receive</code>).
+      Configure the default URL in <a href="/settings" class="underline">Settings</a>.
+    </div>
+
+    <form method="POST" action="/webhooks/trigger"
+          class="bg-white border border-gray-200 rounded p-5 space-y-4">
+
+      <div>
+        <label for="webhook_url" class="block text-sm font-medium text-gray-700 mb-1">
+          Target URL <span class="text-red-500">*</span>
+        </label>
+        <input type="url" id="webhook_url" name="webhook_url"
+               value="<%= defaultUrl %>"
+               placeholder="https://your-app.example.com/webhooks/receive"
+               required
+               class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <p class="text-xs text-gray-400 mt-1">The URL the Partner API will POST the webhook payload to.</p>
+      </div>
+
+      <div>
+        <label for="event" class="block text-sm font-medium text-gray-700 mb-1">
+          Event <span class="text-red-500">*</span>
+        </label>
+        <select id="event" name="event" required
+                class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <% events.forEach(e => { %>
+            <option value="<%= e %>"><%= e %></option>
+          <% }); %>
+        </select>
+      </div>
+
+      <button type="submit"
+              class="bg-blue-700 text-white px-5 py-2 rounded text-sm font-medium hover:bg-blue-800">
+        Send Test Webhook
+      </button>
+    </form>
+
+    <!-- Result / error banner -->
+    <% if (error) { %>
+      <div class="mt-4 bg-red-50 border border-red-300 rounded p-4 text-red-700 text-sm">
+        <strong><%= error.status ? error.status + ' — ' : '' %></strong><%= error.message %>
+        <% if (error.status === 401) { %><a href="/settings" class="underline ml-1">Check your API key in Settings.</a><% } %>
+      </div>
+    <% } else if (result) { %>
+      <div class="mt-4 bg-green-50 border border-green-300 rounded p-4 text-green-700 text-sm">
+        Webhook dispatched successfully. The Partner API sent the payload to your target URL.
+      </div>
+    <% } %>
+
+    <%- include('partials/debug', { debug }) %>
+  </div>
+
+  <!-- ── Received webhook log ─────────────────────────────────────────────── -->
+  <div>
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Received Webhooks</h3>
+      <% if (receivedWebhooks.length > 0) { %>
+        <a href="/webhooks/clear" class="text-xs text-gray-400 hover:text-red-500 hover:underline">Clear log</a>
+      <% } %>
+    </div>
+
+    <% if (receivedWebhooks.length === 0) { %>
+      <div class="bg-white border border-gray-200 rounded p-6 text-center text-gray-400 text-sm">
+        No webhooks received yet. Send a test webhook and make sure your target URL points to
+        <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">/webhooks/receive</code> on this app.
+      </div>
+    <% } else { %>
+      <div class="space-y-3">
+        <% receivedWebhooks.forEach((entry, i) => { %>
+          <%
+            const bodyStr = JSON.stringify(entry.payload, null, 2);
+            const lines = bodyStr.split('\n');
+            const preview = lines.slice(0, 10).join('\n');
+            const remaining = lines.slice(10).join('\n');
+            const remainingCount = lines.length - 10;
+          %>
+          <div class="rounded border border-gray-700 bg-gray-900 text-xs font-mono overflow-x-auto">
+            <div class="px-4 py-2 border-b border-gray-700 flex items-center justify-between">
+              <span class="text-gray-400 font-sans font-semibold uppercase tracking-wide">
+                #<%= receivedWebhooks.length - i %>
+                <% if (entry.payload && entry.payload.event) { %>
+                  — <span class="text-blue-400 normal-case font-mono"><%= entry.payload.event %></span>
+                <% } %>
+              </span>
+              <span class="text-gray-500 font-sans normal-case"><%= entry.receivedAt %></span>
+            </div>
+            <div class="px-4 py-3">
+              <pre class="text-gray-300 whitespace-pre-wrap break-all"><%= preview %></pre>
+              <% if (remainingCount > 0) { %>
+                <details class="mt-2">
+                  <summary class="text-blue-400 cursor-pointer select-none hover:text-blue-300">
+                    Show <%= remainingCount %> more line<%= remainingCount === 1 ? '' : 's' %>
+                  </summary>
+                  <pre class="text-gray-300 whitespace-pre-wrap break-all mt-1"><%= remaining %></pre>
+                </details>
+              <% } %>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } %>
+  </div>
+
+</div>
+
+<%- include('partials/footer') %>

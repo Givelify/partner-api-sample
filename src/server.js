@@ -17,6 +17,9 @@ const app = express();
 // Parse form submissions from the Settings page
 app.use(express.urlencoded({ extended: false }));
 
+// Parse JSON bodies — used by the webhook receiver endpoint
+app.use(express.json());
+
 // Serve CSS from /public
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
@@ -30,6 +33,7 @@ app.use('/donors',        require('./routes/donors'));
 app.use('/envelopes',     require('./routes/envelopes'));
 app.use('/organizations', require('./routes/organizations'));
 app.use('/settings',      require('./routes/settings'));
+app.use('/webhooks',      require('./routes/webhooks'));
 
 // Root → donations tab
 app.get('/', (_req, res) => res.redirect('/donations'));

@@ -143,3 +143,54 @@ describe('getLastDebug', () => {
     expect(debug.response.body).toBeNull();
   });
 });
+
+describe('triggerTestWebhook', () => {
+  it('calls POST /sandbox/webhooks/test with url and event', async () => {
+    const responseBody = { data: { event: 'donation.created', event_id: 'abc', version: 'v1', data: {} } };
+    mock.onPost('/sandbox/webhooks/test').reply(200, responseBody);
+
+    const result = await apiClient.triggerTestWebhook({
+      url: 'https://example.com/webhooks/receive',
+      event: 'donation.created',
+    });
+
+    expect(result).toEqual(responseBody);
+    expect(mock.history.post[0].url).toBe('/sandbox/webhooks/test');
+    const body = JSON.parse(mock.history.post[0].data);
+    expect(body).toMatchObject({ url: 'https://example.com/webhooks/receive', event: 'donation.created' });
+  });
+
+  it('throws normalized error on 422 validation failure', async () => {
+    mock.onPost('/sandbox/webhooks/test').reply(422, { message: 'The url field must be a valid HTTPS URL.' });
+
+    await expect(
+      apiClient.triggerTestWebhook({ url: 'http://not-https.example.com', event: 'donation.created' })
+    ).rejects.toMatchObject({
+      status: 422,
+      message: 'The url field must be a valid HTTPS URL.',
+    });
+  });
+
+  it('throws network error when server is unreachable', async () => {
+    mock.onPost('/sandbox/webhooks/test').networkError();
+
+    await expect(
+      apiClient.triggerTestWebhook({ url: 'https://example.com/receive', event: 'donation.created' })
+    ).rejects.toMatchObject({
+      status: 0,
+      message: expect.stringContaining('Could not reach the API'),
+    });
+  });
+
+  it('populates lastDebug with POST request details', async () => {
+    mock.onPost('/sandbox/webhooks/test').reply(200, { data: {} });
+
+    await apiClient.triggerTestWebhook({ url: 'https://example.com/receive', event: 'donor.updated' });
+
+    const debug = apiClient.getLastDebug();
+    expect(debug.request.url).toContain('/sandbox/webhooks/test');
+    expect(debug.request.headers).toHaveProperty('Authorization');
+    expect(debug.request.headers['Content-Type']).toBe('application/json');
+    expect(debug.response.status).toBe(200);
+  });
+});

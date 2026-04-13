@@ -131,6 +131,66 @@ async function get(path, params = {}) {
   }
 }
 
+/**
+ * Internal POST helper. Normalizes all errors to { status, message }.
+ * Populates lastDebug with request/response details for the UI panel.
+ */
+async function post(path, body = {}) {
+  const url = buildFullUrl(state.baseURL, path, {});
+  const headers = {
+    Authorization: `Bearer ${maskApiKey(state.apiKey)}`,
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+  };
+
+  lastDebug = {
+    request: { url, headers, body: JSON.stringify(body, null, 2) },
+    response: null,
+  };
+
+  try {
+    const response = await instance.post(path, body);
+    lastDebug.response = {
+      status: response.status,
+      body: JSON.stringify(response.data, null, 2),
+    };
+    return response.data;
+  } catch (err) {
+    if (err.response) {
+      lastDebug.response = {
+        status: err.response.status,
+        body: JSON.stringify(err.response.data, null, 2),
+      };
+      throw {
+        status: err.response.status,
+        message:
+          (err.response.data && err.response.data.message) ||
+          err.response.statusText ||
+          'Unknown error',
+      };
+    }
+    lastDebug.response = { status: 0, body: null };
+    throw {
+      status: 0,
+      message: 'Could not reach the API — check the Base URL in Settings',
+    };
+  }
+}
+
+// ── Webhooks ─────────────────────────────────────────────────────────────────
+
+/**
+ * POST /sandbox/webhooks/test
+ * Triggers a test webhook delivery. Only available in sandbox/QA environments.
+ *
+ * @param {{ url: string, event: string }} params
+ *   url   - HTTPS URL the Partner API will POST the webhook payload to
+ *   event - one of the supported event types (e.g. 'donation.created')
+ */
+async function triggerTestWebhook({ url, event }) {
+  return post('/sandbox/webhooks/test', { url, event });
+}
+
 // ── Donations ────────────────────────────────────────────────────────────────
 
 /**
@@ -206,6 +266,7 @@ module.exports = {
   getEnvelope,
   getOrganizations,
   getOrganization,
+  triggerTestWebhook,
   updateCredentials,
   getLastDebug: () => lastDebug,
   // Test helpers — not for production use
