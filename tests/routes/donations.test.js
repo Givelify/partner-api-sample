@@ -8,8 +8,7 @@ const apiClient = require('../../src/apiClient');
 
 const paginated = (data = [], extra = {}) => ({
   data,
-  links: { prev: null, next: null },
-  meta: { current_page: 1, last_page: 1, total: data.length, per_page: 20 },
+  pagination: { current_page: 1, total_pages: 1, next_page_url: null },
   ...extra,
 });
 
@@ -42,10 +41,10 @@ describe('GET /donations', () => {
     expect(res.text).toContain('Unauthenticated.');
   });
 
-  it('shows next page link when links.next is present', async () => {
+  it('shows next page link when pagination.next_page_url is present', async () => {
     apiClient.getDonations.mockResolvedValue(
-      paginated([{ id: 'x', amount: 10, status: 'donated', envelopes: [] }], {
-        links: { prev: null, next: 'http://api/donations?page=2' },
+      paginated([{ id: 'x', amount: 10, status: 'disbursed', envelopes: [] }], {
+        pagination: { current_page: 1, total_pages: 3, next_page_url: 'http://api/donations?page=2' },
       })
     );
     const res = await request(app).get('/donations');
@@ -62,7 +61,7 @@ describe('GET /donations', () => {
 
   it('renders formatted amount when present', async () => {
     apiClient.getDonations.mockResolvedValue(
-      paginated([{ id: 'x', amount: 25, status: 'donated', envelopes: [] }])
+      paginated([{ id: 'x', amount: 25, status: 'disbursed', envelopes: [] }])
     );
     const res = await request(app).get('/donations');
     expect(res.text).toContain('$25.00');
@@ -70,9 +69,36 @@ describe('GET /donations', () => {
 
   it('renders em dash when amount is null', async () => {
     apiClient.getDonations.mockResolvedValue(
-      paginated([{ id: 'x', amount: null, status: 'donated', envelopes: [] }])
+      paginated([{ id: 'x', amount: null, status: 'pending', envelopes: [] }])
     );
     const res = await request(app).get('/donations');
     expect(res.text).toContain('—');
+  });
+
+  it('applies green badge for disbursed status', async () => {
+    apiClient.getDonations.mockResolvedValue(
+      paginated([{ id: 'x', amount: 10, status: 'disbursed', envelopes: [] }])
+    );
+    const res = await request(app).get('/donations');
+    expect(res.text).toContain('bg-green-100');
+    expect(res.text).toContain('disbursed');
+  });
+
+  it('applies red badge for refunded status', async () => {
+    apiClient.getDonations.mockResolvedValue(
+      paginated([{ id: 'x', amount: 10, status: 'refunded', envelopes: [] }])
+    );
+    const res = await request(app).get('/donations');
+    expect(res.text).toContain('bg-red-100');
+    expect(res.text).toContain('refunded');
+  });
+
+  it('applies yellow badge for pending status', async () => {
+    apiClient.getDonations.mockResolvedValue(
+      paginated([{ id: 'x', amount: 10, status: 'pending', envelopes: [] }])
+    );
+    const res = await request(app).get('/donations');
+    expect(res.text).toContain('bg-yellow-100');
+    expect(res.text).toContain('pending');
   });
 });

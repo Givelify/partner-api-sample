@@ -39,7 +39,7 @@ cp .env.example .env
 Open `.env` and fill in your values:
 
 ```
-API_BASE_URL=https://api.givelify.com/api/v1
+API_BASE_URL=https://api-sandbox.givelify.com/v1/
 API_KEY=your-api-key-here
 PORT=3000
 

@@ -8,8 +8,7 @@ const apiClient = require('../../src/apiClient');
 
 const paginated = (data = []) => ({
   data,
-  links: { prev: null, next: null },
-  meta: { current_page: 1, last_page: 1, total: data.length, per_page: 20 },
+  pagination: { current_page: 1, total_pages: 1, next_page_url: null },
 });
 
 describe('GET /donors', () => {

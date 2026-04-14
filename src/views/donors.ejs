@@ -62,9 +62,9 @@
     </table>
   </div>
 
-  <% if (meta) { %>
+  <% if (pagination) { %>
   <div class="flex items-center justify-between mt-4 text-sm text-gray-600">
-    <span>Page <%= meta.current_page %> of <%= meta.last_page %> &nbsp;·&nbsp; <%= meta.total %> total</span>
+    <span>Page <%= pagination.current_page %> of <%= pagination.total_pages %></span>
     <div class="flex gap-2">
       <% if (prevQuery) { %><a href="/donors?<%= prevQuery %>" class="px-3 py-1.5 border border-gray-300 rounded hover:bg-gray-100">← Previous</a><% } %>
       <% if (nextQuery) { %><a href="/donors?<%= nextQuery %>" class="px-3 py-1.5 border border-gray-300 rounded hover:bg-gray-100">Next →</a><% } %>

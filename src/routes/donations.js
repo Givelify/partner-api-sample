@@ -37,13 +37,12 @@ router.get('/', async (req, res) => {
   if (organization_id) params.organization_id = organization_id;
   if (updated_since)   params.updated_since   = updated_since;
 
-  let data = [], links = null, meta = null, error = null;
+  let data = [], pagination = null, error = null;
 
   try {
     const response = await apiClient.getDonations(params);
-    data  = response.data;
-    links = response.links;
-    meta  = response.meta;
+    data       = response.data;
+    pagination = response.pagination;
   } catch (err) {
     error = err;
   }
@@ -53,8 +52,7 @@ router.get('/', async (req, res) => {
   res.render('donations', {
     activeTab: 'donations',
     data,
-    links,
-    meta,
+    pagination,
     error,
     debug,
     filters: {
@@ -64,8 +62,8 @@ router.get('/', async (req, res) => {
       organization_id: organization_id || '',
       updated_since: updated_since || '',
     },
-    prevQuery: links && links.prev ? pageQuery(req.query, Number(page) - 1) : null,
-    nextQuery: links && links.next ? pageQuery(req.query, Number(page) + 1) : null,
+    prevQuery: pagination && pagination.current_page > 1 ? pageQuery(req.query, pagination.current_page - 1) : null,
+    nextQuery: pagination && pagination.next_page_url   ? pageQuery(req.query, pagination.current_page + 1) : null,
   });
 });
 
