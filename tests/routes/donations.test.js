@@ -59,4 +59,20 @@ describe('GET /donations', () => {
       expect.objectContaining({ organization_id: 'org-uuid-123' })
     );
   });
+
+  it('renders formatted amount when present', async () => {
+    apiClient.getDonations.mockResolvedValue(
+      paginated([{ id: 'x', amount: 25, status: 'donated', envelopes: [] }])
+    );
+    const res = await request(app).get('/donations');
+    expect(res.text).toContain('$25.00');
+  });
+
+  it('renders em dash when amount is null', async () => {
+    apiClient.getDonations.mockResolvedValue(
+      paginated([{ id: 'x', amount: null, status: 'donated', envelopes: [] }])
+    );
+    const res = await request(app).get('/donations');
+    expect(res.text).toContain('—');
+  });
 });

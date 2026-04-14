@@ -67,7 +67,7 @@
         <tr class="hover:bg-gray-50">
           <td class="px-4 py-3 text-gray-600"><%= donation.created_at || '—' %></td>
           <td class="px-4 py-3"><%= donation.donor_id || '—' %></td>
-          <td class="px-4 py-3 font-medium">$<%= donation.amount != null ? donation.amount.toFixed(2) : '—' %></td>
+          <td class="px-4 py-3 font-medium"><%= donation.amount != null ? '$' + donation.amount.toFixed(2) : '—' %></td>
           <td class="px-4 py-3 text-gray-600">
             <% if (donation.envelopes && donation.envelopes.length > 0) { %>
               <%= donation.envelopes.map(e => e.name).join(', ') %>
