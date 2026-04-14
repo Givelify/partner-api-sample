@@ -23,13 +23,12 @@ router.get('/', async (req, res) => {
   if (name)          params.name          = name;
   if (updated_since) params.updated_since = updated_since;
 
-  let data = [], links = null, meta = null, error = null;
+  let data = [], pagination = null, error = null;
 
   try {
     const response = await apiClient.getDonors(params);
-    data  = response.data;
-    links = response.links;
-    meta  = response.meta;
+    data       = response.data;
+    pagination = response.pagination;
   } catch (err) {
     error = err;
   }
@@ -39,13 +38,12 @@ router.get('/', async (req, res) => {
   res.render('donors', {
     activeTab: 'donors',
     data,
-    links,
-    meta,
+    pagination,
     error,
     debug,
     filters: { email: email || '', name: name || '', updated_since: updated_since || '' },
-    prevQuery: links && links.prev ? pageQuery(req.query, Number(page) - 1) : null,
-    nextQuery: links && links.next ? pageQuery(req.query, Number(page) + 1) : null,
+    prevQuery: pagination && pagination.current_page > 1 ? pageQuery(req.query, pagination.current_page - 1) : null,
+    nextQuery: pagination && pagination.next_page_url   ? pageQuery(req.query, pagination.current_page + 1) : null,
   });
 });
 
