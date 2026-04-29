@@ -49,7 +49,7 @@
       </thead>
       <tbody class="divide-y divide-gray-100">
         <% data.forEach(donor => { %>
-        <tr class="hover:bg-gray-50">
+        <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='/donors/<%= donor.id %>'">
           <td class="px-4 py-3 font-medium"><%= donor.name || '—' %></td>
           <td class="px-4 py-3 text-gray-600"><%= donor.email || '—' %></td>
           <td class="px-4 py-3 text-gray-600"><%= donor.phone || '—' %></td>

@@ -65,7 +65,7 @@
       </thead>
       <tbody class="divide-y divide-gray-100">
         <% data.forEach(donation => { %>
-        <tr class="hover:bg-gray-50">
+        <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='/donations/<%= donation.id %>'">
           <td class="px-4 py-3 text-gray-600"><%= donation.created_at || '—' %></td>
           <td class="px-4 py-3"><%= donation.donor_id || '—' %></td>
           <td class="px-4 py-3 font-medium"><%= donation.amount != null ? '$' + donation.amount.toFixed(2) : '—' %></td>

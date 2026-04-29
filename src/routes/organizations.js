@@ -34,4 +34,20 @@ router.get('/', async (req, res) => {
   });
 });
 
+router.get('/:id', async (req, res) => {
+  let data = null, error = null;
+  try {
+    const response = await apiClient.getOrganization(req.params.id);
+    data = response.data;
+  } catch (err) {
+    error = err;
+  }
+  res.render('organization-detail', {
+    activeTab: 'organizations',
+    data,
+    error,
+    debug: apiClient.getLastDebug(),
+  });
+});
+
 module.exports = router;
