@@ -58,6 +58,7 @@
           <th class="px-4 py-3">Donor</th>
           <th class="px-4 py-3">Amount</th>
           <th class="px-4 py-3">Envelope(s)</th>
+          <th class="px-4 py-3">Payment Method</th>
           <th class="px-4 py-3">Status</th>
           <th class="px-4 py-3">Receipt #</th>
         </tr>
@@ -71,6 +72,11 @@
           <td class="px-4 py-3 text-gray-600">
             <% if (donation.envelopes && donation.envelopes.length > 0) { %>
               <%= donation.envelopes.map(e => e.name).join(', ') %>
+            <% } else { %>—<% } %>
+          </td>
+          <td class="px-4 py-3 text-gray-600">
+            <% if (donation.payment_method && donation.payment_method.card) { %>
+              <%= donation.payment_method.type %> · <%= donation.payment_method.card.brand %>
             <% } else { %>—<% } %>
           </td>
           <td class="px-4 py-3">
