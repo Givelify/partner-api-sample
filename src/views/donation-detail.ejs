@@ -1,0 +1,140 @@
+<%- include('partials/header', { activeTab: 'donations' }) %>
+
+<div class="mb-4">
+  <a href="/donations" class="text-sm text-blue-700 hover:underline">← Back to Donations</a>
+</div>
+
+<h2 class="text-xl font-semibold mb-4">Donation
+  <% if (data) { %><span class="font-mono text-base text-gray-400"><%= data.id %></span><% } %>
+</h2>
+
+<% if (error) { %>
+  <div class="bg-red-50 border border-red-300 rounded p-4 mb-4 text-red-700">
+    <strong><%= error.status ? error.status + ' — ' : '' %></strong><%= error.message %>
+    <% if (error.status === 401) { %>
+      <a href="/settings" class="underline ml-1">Check your API key in Settings.</a>
+    <% } %>
+  </div>
+<% } else if (data) { %>
+  <div class="bg-white border border-gray-200 rounded overflow-hidden mb-6">
+    <table class="w-full text-sm">
+      <tbody class="divide-y divide-gray-100">
+        <tr>
+          <td class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide w-48">ID</td>
+          <td class="px-4 py-3 font-mono text-gray-800"><%= data.id %></td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Donor</td>
+          <td class="px-4 py-3">
+            <% if (data.donor_id) { %>
+              <a href="/donors/<%= data.donor_id %>" class="text-blue-700 underline font-mono"><%= data.donor_id %></a>
+            <% } else { %>—<% } %>
+          </td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Organization</td>
+          <td class="px-4 py-3">
+            <% if (data.organization_id) { %>
+              <a href="/organizations/<%= data.organization_id %>" class="text-blue-700 underline font-mono"><%= data.organization_id %></a>
+            <% } else { %>—<% } %>
+          </td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Receipt #</td>
+          <td class="px-4 py-3 text-gray-800"><%= data.receipt_number || '—' %></td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Status</td>
+          <td class="px-4 py-3">
+            <span class="px-2 py-0.5 rounded-full text-xs font-medium
+              <%= data.status === 'disbursed' ? 'bg-green-100 text-green-700'
+                : data.status === 'refunded'  ? 'bg-red-100 text-red-700'
+                : data.status === 'pending'   ? 'bg-yellow-100 text-yellow-700'
+                : 'bg-gray-100 text-gray-600' %>">
+              <%= data.status %>
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Amount</td>
+          <td class="px-4 py-3 font-medium"><%= data.amount != null ? '$' + data.amount.toFixed(2) : '—' %></td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Amount Refunded</td>
+          <td class="px-4 py-3"><%= data.amount_refunded != null ? '$' + data.amount_refunded.toFixed(2) : '—' %></td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Fees</td>
+          <td class="px-4 py-3 text-gray-600"><%= data.fees != null ? data.fees : '—' %></td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Is Recurring</td>
+          <td class="px-4 py-3"><%= data.is_recurring ? 'Yes' : 'No' %></td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Payment Type</td>
+          <td class="px-4 py-3 text-gray-600"><%= data.payment_method ? data.payment_method.type : '—' %></td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Card Brand</td>
+          <td class="px-4 py-3 text-gray-600"><%= data.payment_method && data.payment_method.card ? data.payment_method.card.brand : '—' %></td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Note</td>
+          <td class="px-4 py-3 text-gray-600"><%= data.note || '—' %></td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Note Reply</td>
+          <td class="px-4 py-3 text-gray-600"><%= data.note_reply || '—' %></td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Disbursement Date</td>
+          <td class="px-4 py-3 text-gray-600"><%= data.disbursement_date || '—' %></td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Refund Date</td>
+          <td class="px-4 py-3 text-gray-600"><%= data.refund_date || '—' %></td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Created At</td>
+          <td class="px-4 py-3 text-gray-600"><%= data.created_at || '—' %></td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Updated At</td>
+          <td class="px-4 py-3 text-gray-600"><%= data.updated_at || '—' %></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <% if (data.envelopes && data.envelopes.length > 0) { %>
+  <h3 class="text-base font-semibold mb-2">Envelopes</h3>
+  <div class="bg-white border border-gray-200 rounded overflow-hidden mb-6">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+        <tr>
+          <th class="px-4 py-3">Name</th>
+          <th class="px-4 py-3">Amount</th>
+          <th class="px-4 py-3">Description</th>
+          <th class="px-4 py-3">External ID</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <% data.envelopes.forEach(env => { %>
+        <tr>
+          <td class="px-4 py-3">
+            <a href="/envelopes/<%= env.id %>" class="text-blue-700 underline"><%= env.name || '—' %></a>
+          </td>
+          <td class="px-4 py-3 font-medium"><%= env.amount != null ? '$' + env.amount.toFixed(2) : '—' %></td>
+          <td class="px-4 py-3 text-gray-600"><%= env.description || '—' %></td>
+          <td class="px-4 py-3 text-gray-500"><%= env.external_id || '—' %></td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+<% } %>
+
+<%- include('partials/debug', { debug }) %>
+<%- include('partials/footer') %>

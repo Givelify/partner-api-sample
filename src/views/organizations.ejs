@@ -23,7 +23,7 @@
       </thead>
       <tbody class="divide-y divide-gray-100">
         <% data.forEach(org => { %>
-        <tr class="hover:bg-gray-50">
+        <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='/organizations/<%= org.id %>'">
           <td class="px-4 py-3 font-medium"><%= org.name || '—' %></td>
           <td class="px-4 py-3">
             <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">

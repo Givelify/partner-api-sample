@@ -42,7 +42,7 @@
       </thead>
       <tbody class="divide-y divide-gray-100">
         <% data.forEach(env => { %>
-        <tr class="hover:bg-gray-50">
+        <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='/envelopes/<%= env.id %>'">
           <td class="px-4 py-3 font-medium"><%= env.name || '—' %></td>
           <td class="px-4 py-3 text-gray-600"><%= env.description || '—' %></td>
           <td class="px-4 py-3 text-gray-500"><%= env.external_id || '—' %></td>

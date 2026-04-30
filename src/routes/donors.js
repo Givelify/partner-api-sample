@@ -47,4 +47,20 @@ router.get('/', async (req, res) => {
   });
 });
 
+router.get('/:uuid', async (req, res) => {
+  let data = null, error = null;
+  try {
+    const response = await apiClient.getDonor(req.params.uuid);
+    data = response.data;
+  } catch (err) {
+    error = err;
+  }
+  res.render('donor-detail', {
+    activeTab: 'donors',
+    data,
+    error,
+    debug: apiClient.getLastDebug(),
+  });
+});
+
 module.exports = router;

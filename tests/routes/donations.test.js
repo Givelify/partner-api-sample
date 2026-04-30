@@ -102,3 +102,74 @@ describe('GET /donations', () => {
     expect(res.text).toContain('pending');
   });
 });
+
+describe('GET /donations/:uuid', () => {
+  const donation = {
+    id: 'don-uuid-123',
+    organization_id: 'org-uuid-456',
+    donor_id: 'donor-uuid-789',
+    receipt_number: 'R001',
+    status: 'disbursed',
+    amount: 100.00,
+    amount_refunded: 0,
+    fees: 2.5,
+    is_recurring: false,
+    payment_method: { type: 'card', card: { brand: 'visa' } },
+    note: null,
+    note_reply: null,
+    refund_date: null,
+    disbursement_date: '2024-02-01',
+    created_at: '2024-01-15',
+    updated_at: '2024-02-01',
+    envelopes: [{ id: 'env-uuid-1', name: 'General Fund', amount: 100.00, description: 'Main fund', external_id: 'GF1' }],
+  };
+
+  it('renders donation detail page with 200', async () => {
+    apiClient.getDonation.mockResolvedValue({ data: donation });
+    const res = await request(app).get('/donations/don-uuid-123');
+    expect(res.status).toBe(200);
+    expect(res.text).toContain('don-uuid-123');
+  });
+
+  it('calls getDonation with the uuid from the URL', async () => {
+    apiClient.getDonation.mockResolvedValue({ data: donation });
+    await request(app).get('/donations/don-uuid-123');
+    expect(apiClient.getDonation).toHaveBeenCalledWith('don-uuid-123');
+  });
+
+  it('shows donor_id as a cross-link to /donors/:id', async () => {
+    apiClient.getDonation.mockResolvedValue({ data: donation });
+    const res = await request(app).get('/donations/don-uuid-123');
+    expect(res.text).toContain('href="/donors/donor-uuid-789"');
+  });
+
+  it('shows organization_id as a cross-link to /organizations/:id', async () => {
+    apiClient.getDonation.mockResolvedValue({ data: donation });
+    const res = await request(app).get('/donations/don-uuid-123');
+    expect(res.text).toContain('href="/organizations/org-uuid-456"');
+  });
+
+  it('shows envelope cross-link to /envelopes/:id', async () => {
+    apiClient.getDonation.mockResolvedValue({ data: donation });
+    const res = await request(app).get('/donations/don-uuid-123');
+    expect(res.text).toContain('href="/envelopes/env-uuid-1"');
+  });
+
+  it('shows error banner on API error', async () => {
+    apiClient.getDonation.mockRejectedValue({ status: 404, message: 'Not found.' });
+    const res = await request(app).get('/donations/bad-uuid');
+    expect(res.status).toBe(200);
+    expect(res.text).toContain('Not found.');
+  });
+});
+
+describe('GET /donations list rows are clickable', () => {
+  it('each row links to the donation detail page', async () => {
+    apiClient.getDonations.mockResolvedValue({
+      data: [{ id: 'don-uuid-123', amount: 50, status: 'pending', envelopes: [] }],
+      pagination: { current_page: 1, total_pages: 1, next_page_url: null },
+    });
+    const res = await request(app).get('/donations');
+    expect(res.text).toContain('/donations/don-uuid-123');
+  });
+});
