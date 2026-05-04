@@ -83,6 +83,29 @@ function maskApiKey(key) {
  */
 let lastDebug = null;
 
+// Cached name of the main-campus organization. null until a successful fetch.
+let orgName = null;
+
+/**
+ * Fetches /organizations, finds the first entry with type === 'main-campus',
+ * and caches its name. Sets orgName to null on any error or if no match found.
+ * Never throws.
+ */
+async function fetchOrgName() {
+  try {
+    const response = await getOrganizations();
+    const match = (response.data || []).find(o => o.type === 'main-campus');
+    orgName = match ? match.name : null;
+  } catch (_) {
+    orgName = null;
+  }
+}
+
+/** Returns the cached org name, or null if not yet fetched or fetch failed. */
+function getOrgName() {
+  return orgName;
+}
+
 /**
  * Internal GET helper. Normalizes all errors to { status, message }.
  * Also populates lastDebug with request/response details for the UI panel.
@@ -268,6 +291,8 @@ module.exports = {
   getOrganization,
   triggerTestWebhook,
   updateCredentials,
+  fetchOrgName,
+  getOrgName,
   getLastDebug: () => lastDebug,
   // Test helpers — not for production use
   _getInstance: () => instance,

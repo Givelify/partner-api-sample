@@ -13,6 +13,7 @@ from your browser using your API credentials, and test webhook delivery end-to-e
 | Calling a non-paginated endpoint | `src/routes/envelopes.js` |
 | Calling a POST endpoint | `src/apiClient.js` — `post()` |
 | Error handling | `src/apiClient.js` — `get()`, `post()` |
+| Fetching data on startup & caching it | `src/apiClient.js` — `fetchOrgName()`, `src/server.js` |
 | Updating credentials at runtime | `src/routes/settings.js` — `POST /` |
 | Triggering a test webhook | `src/routes/webhooks.js` — `POST /trigger` |
 | Receiving webhook payloads | `src/routes/webhooks.js` — `POST /receive` |
@@ -97,6 +98,11 @@ src/
     webhooks.js     Trigger + receive + log
     settings.js
   views/            EJS templates (one per tab + shared partials)
+    partials/
+      header.ejs    Top bar, sidebar nav, opens <main>
+      footer.ejs    Closes <main> and <body>
+public/             Static assets (CSS, images)
+tests/              Jest + Supertest test suite
 ```
 
 ## Running Tests

@@ -11,6 +11,7 @@ require('dotenv').config();
 
 const express = require('express');
 const path = require('path');
+const apiClient = require('./apiClient');
 
 const app = express();
 
@@ -26,6 +27,12 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 // EJS for server-side HTML rendering
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+
+// Inject cached org name into every view so header.ejs can display it
+app.use((req, res, next) => {
+  res.locals.orgName = apiClient.getOrgName();
+  next();
+});
 
 // Mount routes
 app.use('/donations',     require('./routes/donations'));
@@ -43,6 +50,7 @@ module.exports = app;
 // Start the server only when this file is the entry point
 if (require.main === module) {
   const port = parseInt(process.env.PORT || '3000', 10);
+  apiClient.fetchOrgName().catch(() => {});
   app.listen(port, () => {
     console.log(`Givelify Partner API Dashboard → http://localhost:${port}`);
     console.log('Press Ctrl+C to stop.');
