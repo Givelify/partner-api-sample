@@ -47,7 +47,7 @@ router.get('/', (req, res) => {
   });
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const { api_base_url, api_key, webhook_receiver_url } = req.body;
 
   // Validate — API base URL and key may not be blank
@@ -79,6 +79,7 @@ router.post('/', (req, res) => {
   process.env.API_KEY = api_key;
   process.env.WEBHOOK_RECEIVER_URL = webhook_receiver_url || '';
   apiClient.updateCredentials(api_base_url, api_key);
+  await apiClient.fetchOrgName();
 
   res.redirect('/settings?saved=1');
 });

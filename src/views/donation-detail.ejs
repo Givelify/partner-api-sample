@@ -1,7 +1,7 @@
 <%- include('partials/header', { activeTab: 'donations' }) %>
 
 <div class="mb-4">
-  <a href="/donations" class="text-sm text-blue-700 hover:underline">← Back to Donations</a>
+  <a href="/donations" class="text-sm text-gi-purple hover:underline">← Back to Donations</a>
 </div>
 
 <h2 class="text-xl font-semibold mb-4">Donation
@@ -27,7 +27,7 @@
           <td class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Donor</td>
           <td class="px-4 py-3">
             <% if (data.donor_id) { %>
-              <a href="/donors/<%= data.donor_id %>" class="text-blue-700 underline font-mono"><%= data.donor_id %></a>
+              <a href="/donors/<%= data.donor_id %>" class="text-gi-purple underline font-mono"><%= data.donor_id %></a>
             <% } else { %>—<% } %>
           </td>
         </tr>
@@ -35,7 +35,7 @@
           <td class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Organization</td>
           <td class="px-4 py-3">
             <% if (data.organization_id) { %>
-              <a href="/organizations/<%= data.organization_id %>" class="text-blue-700 underline font-mono"><%= data.organization_id %></a>
+              <a href="/organizations/<%= data.organization_id %>" class="text-gi-purple underline font-mono"><%= data.organization_id %></a>
             <% } else { %>—<% } %>
           </td>
         </tr>
@@ -123,7 +123,7 @@
         <% data.envelopes.forEach(env => { %>
         <tr>
           <td class="px-4 py-3">
-            <a href="/envelopes/<%= env.id %>" class="text-blue-700 underline"><%= env.name || '—' %></a>
+            <a href="/envelopes/<%= env.id %>" class="text-gi-purple underline"><%= env.name || '—' %></a>
           </td>
           <td class="px-4 py-3 font-medium"><%= env.amount != null ? '$' + env.amount.toFixed(2) : '—' %></td>
           <td class="px-4 py-3 text-gray-600"><%= env.description || '—' %></td>

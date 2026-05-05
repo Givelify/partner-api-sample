@@ -27,7 +27,7 @@
              value="<%= apiBaseUrl %>"
              placeholder="https://api.givelify.com/api/v1"
              required
-             class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+             class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gi-purple" />
       <p class="text-xs text-gray-400 mt-1">The value stored in <code>API_BASE_URL</code> in your .env file.</p>
     </div>
 
@@ -37,7 +37,7 @@
         <input type="password" id="api_key" name="api_key"
                value="<%= apiKey %>"
                required
-               class="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+               class="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gi-purple" />
         <button type="button" onclick="toggleReveal()"
                 class="px-3 py-2 border border-gray-300 rounded text-sm text-gray-600 hover:bg-gray-50">
           Show
@@ -54,7 +54,7 @@
       <input type="url" id="webhook_receiver_url" name="webhook_receiver_url"
              value="<%= webhookReceiverUrl %>"
              placeholder="https://your-tunnel.ngrok.io/webhooks/receive"
-             class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+             class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gi-purple" />
       <p class="text-xs text-gray-400 mt-1">
         Pre-fills the target URL on the Webhooks page. Must be HTTPS.
         Use a tunnel like <a href="https://ngrok.com" target="_blank" rel="noopener" class="underline">ngrok</a> for local testing.
@@ -63,7 +63,7 @@
     </div>
 
     <button type="submit"
-            class="bg-blue-700 text-white px-6 py-2 rounded text-sm font-medium hover:bg-blue-800">
+            class="bg-gi-purple text-white px-6 py-2 rounded text-sm font-medium hover:bg-gi-purple-dark">
       Save Settings
     </button>
   </form>

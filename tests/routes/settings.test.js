@@ -31,6 +31,7 @@ describe('POST /settings', () => {
   let readSpy, writeSpy;
 
   beforeEach(() => {
+    jest.clearAllMocks();
     readSpy = jest.spyOn(fs, 'readFileSync').mockReturnValue(
       'API_BASE_URL=https://old.example.com\nAPI_KEY=old-key\n'
     );
@@ -72,5 +73,16 @@ describe('POST /settings', () => {
       .send({ api_base_url: '', api_key: 'new-key' });
 
     expect(res.status).toBe(400);
+  });
+
+  it('calls fetchOrgName after saving credentials', async () => {
+    apiClient.fetchOrgName.mockResolvedValue(undefined);
+
+    await request(app)
+      .post('/settings')
+      .type('form')
+      .send({ api_base_url: 'https://new.example.com', api_key: 'new-key' });
+
+    expect(apiClient.fetchOrgName).toHaveBeenCalled();
   });
 });

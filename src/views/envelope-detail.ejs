@@ -1,7 +1,7 @@
 <%- include('partials/header', { activeTab: 'envelopes' }) %>
 
 <div class="mb-4">
-  <a href="/envelopes" class="text-sm text-blue-700 hover:underline">← Back to Envelopes</a>
+  <a href="/envelopes" class="text-sm text-gi-purple hover:underline">← Back to Envelopes</a>
 </div>
 
 <h2 class="text-xl font-semibold mb-4">Envelope
@@ -39,7 +39,7 @@
           <td class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Organization</td>
           <td class="px-4 py-3">
             <% if (data.organization_id) { %>
-              <a href="/organizations/<%= data.organization_id %>" class="text-blue-700 underline font-mono"><%= data.organization_id %></a>
+              <a href="/organizations/<%= data.organization_id %>" class="text-gi-purple underline font-mono"><%= data.organization_id %></a>
             <% } else { %>—<% } %>
           </td>
         </tr>

@@ -194,3 +194,48 @@ describe('triggerTestWebhook', () => {
     expect(debug.response.status).toBe(200);
   });
 });
+
+describe('fetchOrgName / getOrgName', () => {
+  it('sets orgName to the main-campus org name', async () => {
+    mock.onGet('/organizations').reply(200, {
+      data: [
+        { id: '1', name: 'Satellite Campus', type: 'satellite-campus' },
+        { id: '2', name: 'Anointed City of the Lord', type: 'main-campus' },
+      ],
+    });
+
+    await apiClient.fetchOrgName();
+
+    expect(apiClient.getOrgName()).toBe('Anointed City of the Lord');
+  });
+
+  it('sets orgName to null when no main-campus org exists', async () => {
+    mock.onGet('/organizations').reply(200, {
+      data: [{ id: '1', name: 'Satellite Campus', type: 'satellite-campus' }],
+    });
+
+    await apiClient.fetchOrgName();
+
+    expect(apiClient.getOrgName()).toBeNull();
+  });
+
+  it('sets orgName to null on API error and does not throw', async () => {
+    mock.onGet('/organizations').reply(401, { message: 'Unauthenticated.' });
+
+    await expect(apiClient.fetchOrgName()).resolves.toBeUndefined();
+    expect(apiClient.getOrgName()).toBeNull();
+  });
+
+  it('uses the first main-campus org when multiple exist', async () => {
+    mock.onGet('/organizations').reply(200, {
+      data: [
+        { id: '1', name: 'First Campus', type: 'main-campus' },
+        { id: '2', name: 'Second Campus', type: 'main-campus' },
+      ],
+    });
+
+    await apiClient.fetchOrgName();
+
+    expect(apiClient.getOrgName()).toBe('First Campus');
+  });
+});
